@@ -9,15 +9,49 @@ A Simple Golang app to count the number of pods in a Kubernetes cluster.
 * Kubertenes version 1.9.6.
 * Golang version 1.9.4
 
+## Quick Start
 
-## How to deploy
-
-Run the following command
+Run the following command to deploy the app to a cluster
 
 `kubectl create -f https://raw.githubusercontent.com/murali44/PodCounter/master/src/deploy.yml --namespace=podcount`
 
+Get the IP address and Port to access the service
+
+`kubectl describe services podcount --namespace=podcount`
+
+Here's the output on my dev machine
+
+```Name:                     podcount
+Namespace:                podcount
+Labels:                   run=podcounter
+Annotations:              <none>
+Selector:                 run=podcounter
+Type:                     NodePort
+IP:                       10.111.89.246
+LoadBalancer Ingress:     localhost
+Port:                     <unset>  8080/TCP
+TargetPort:               8080/TCP
+NodePort:                 <unset>  30813/TCP
+Endpoints:                10.1.0.47:8080,10.1.0.48:8080
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+```
+
+Access the app using the following service values
+
+`<LoadBalancer Ingress>:<NodePort>`
+
+From the example above, the app URL is
+
+`localhost:30813`
+
+
+
+
 
 ## Solution Design
+**Assumptions**: To keep things simple, I'm not creating a load balanced service. We can deploy multiple replicas of the app. However, to access it, we'll need to hit one of the pods. Depending upon how your cluster is configured, you can 
 
 The basic idea for the solution is to leverage the Kubernetes APIServer to get the number of pods.
 We know that every pod in the cluster is automatically injected with a service account (Client creds, Token, Certificate, etc), which can be used to authenticate against the APIServer on the master node. 
