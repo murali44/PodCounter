@@ -3,11 +3,16 @@
 A Simple Golang app to count the number of pods in a Kubernetes cluster.
 
 
+
+
 ## Dev Environment
 
 * Docker for Mac; Edge channel.
 * Kubertenes version 1.9.6.
 * Golang version 1.9.4
+
+
+
 
 ## Quick Start
 
@@ -46,19 +51,31 @@ From the example above, the app URL is
 
 `localhost:30813`
 
+Enter the URL in your browser to get the pod count.
 
 
 
 
 ## Solution Design
-**Assumptions**: To keep things simple, I'm not creating a load balanced service. We can deploy multiple replicas of the app. However, to access it, we'll need to hit one of the pods. Depending upon how your cluster is configured, you can 
+
+**Assumptions**: To keep things simple, I'm not creating a load balanced service. We can deploy 
+multiple replicas of the app. However, to access it, we'll need to hit one of the pods. Depending 
+upon how your cluster is configured, you can 
 
 The basic idea for the solution is to leverage the Kubernetes APIServer to get the number of pods.
-We know that every pod in the cluster is automatically injected with a service account (Client creds, Token, Certificate, etc), which can be used to authenticate against the APIServer on the master node. 
+We know that every pod in the cluster is automatically injected with a service account 
+(Client creds, Token, Certificate, etc), which can be used to authenticate against the APIServer 
+on the master node. Kubernetes provides a client library which does the heavylifting of establishing 
+a secure connection to the APIServer. See here for more details: [kubernetes/client-go](https://github.com/kubernetes/client-go)
+
 
 ![PodCounterArchitecture](https://github.com/murali44/PodCounter/blob/master/PodCounter.jpg)
 
-I found a Golang Kubernetes client library which does the heavylifting of establishing a secure connection to the APIServer. See here for more details: [kubernetes/client-go](https://github.com/kubernetes/client-go)
+To restrict the pod count to the current namespace, I had to inject the namespace into the container 
+as an environment variable. I did this in the deployment configuration file (deploy.yml)
+
+
+
 
 ## How to build and Package the app
 
@@ -66,11 +83,11 @@ I found a Golang Kubernetes client library which does the heavylifting of establ
     `cd PodCounter/src`
 * Get all dependencies.
     `go get`
-* Build the app.
+* Build the app binary.
     `GOOS=linux go build -o ./app .`
 * Build the docker image.
     `docker build -t murali44/podcounter .`
 * Push the image to docker hub.
     `docker push murali44/podcounter`
 
-Note: Don't forget to update the deploy.yml file to use your own container image.
+**Note**: Don't forget to tag the image with your own docker hub repo and update the deploy.yml file to use your own container image.
