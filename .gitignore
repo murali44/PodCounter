@@ -1,0 +1,19 @@
+# visual studio settings folder
+.vscode/
+
+# mac files
+.DS_Store
+
+# go build folders
+src/github.com/
+src/k8s.io/
+src/golang.org/
+bin/
+pkg/
+
+# go binary
+src/app
+
+# others
+src/deployment.yml
+src/service.yml
