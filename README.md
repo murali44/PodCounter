@@ -14,7 +14,7 @@ A Simple Golang app to count the number of pods in a Kubernetes cluster.
 
 
 
-## Quick Start
+## Quickstart Guide
 
 Run the following command to deploy the app to a cluster
 
