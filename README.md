@@ -57,8 +57,7 @@ From the example above, the app URL is
 ## Solution Design
 
 **Assumptions**: To keep things simple, I'm not creating a load balanced service. We can deploy 
-multiple replicas of the app. However, to access it, we'll need to hit one of the pods. Depending 
-upon how your cluster is configured, you can 
+multiple replicas of the app. However, to access it, we'll need to hit one of the pods.
 
 The basic idea for the solution is to leverage the Kubernetes APIServer to get the number of pods.
 We know that every pod in the cluster is automatically injected with a service account 
@@ -66,11 +65,12 @@ We know that every pod in the cluster is automatically injected with a service a
 on the master node. Kubernetes provides a client library which does the heavylifting of establishing 
 a secure connection to the APIServer. See here for more details: [kubernetes/client-go](https://github.com/kubernetes/client-go)
 
+To restrict the pod count to the current namespace, I had to inject the namespace into the container 
+as an environment variable. I did this in the deployment configuration file (deploy.yml)
 
 ![PodCounterArchitecture](https://github.com/murali44/PodCounter/blob/master/PodCounter.jpg)
 
-To restrict the pod count to the current namespace, I had to inject the namespace into the container 
-as an environment variable. I did this in the deployment configuration file (deploy.yml)
+
 
 
 
@@ -92,5 +92,4 @@ as an environment variable. I did this in the deployment configuration file (dep
 
 ## Tests
 
-Unfortunately, I have not included tests with this repo. Being new to Golang, I was unable to successfully mock interfaces and
-functions. I spend a number of hours trying to figure this out, but failed to make my tests pass.
+Unfortunately, I have not included tests with this repo. Being new to Golang, I was unable to successfully figure out how to mock interfaces and functions. I spend a number of hours trying different mock libraries on github, but failed to make my tests pass.
