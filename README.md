@@ -92,4 +92,4 @@ as an environment variable. I did this in the deployment configuration file (dep
 
 ## Tests
 
-Unfortunately, I have not included tests with this repo. Being new to Golang, I was unable to successfully figure out how to mock interfaces and functions. I spend a number of hours trying different mock libraries on github, but failed to make my tests pass.
+Unfortunately, I have not included tests with this repo. Being new to Golang, I was unable to successfully figure out how to mock interfaces and functions. I spent a number of hours trying different mock libraries on github, but failed to make my tests pass.
