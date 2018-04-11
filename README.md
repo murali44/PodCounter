@@ -89,3 +89,8 @@ as an environment variable. I did this in the deployment configuration file (dep
     `docker push murali44/podcounter`
 
 **Note**: Don't forget to tag the image with your own docker hub repo and update the deploy.yml file to use your own container image.
+
+## Tests
+
+Unfortunately, I have not included tests with this repo. Being new to Golang, I was unable to successfully mock interfaces and
+functions. I spend a number of hours trying to figure this out, but failed to make my tests pass.
