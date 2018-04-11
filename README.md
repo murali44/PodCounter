@@ -45,13 +45,11 @@ Events:                   <none>
 
 Access the app using the following service values
 
-`<LoadBalancer Ingress>:<NodePort>`
+`curl <LoadBalancer Ingress>:<NodePort>`
 
 From the example above, the app URL is
 
-`localhost:30813`
-
-Enter the URL in your browser to get the pod count.
+`curl localhost:30813`
 
 
 

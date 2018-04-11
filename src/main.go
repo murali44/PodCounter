@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"./logger"
-
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -23,8 +22,10 @@ var (
 	Error *log.Logger
 )
 
+var configureK8sClient = kubernetes.NewForConfig
+
 func main() {
-	Info, Warning, Error = logger.Init(os.Stdout, os.Stdout, os.Stderr)
+	Info, Warning, Error = logger.Init(os.Stdout, os.Stdout, os.Stdout)
 
 	Info.Printf("Starting PodCounter Service...")
 	http.HandleFunc("/", countPods)
@@ -53,29 +54,33 @@ func countPods(w http.ResponseWriter, r *http.Request) {
 
 	// create the in-cluster config and client
 	config, _ := rest.InClusterConfig()
-	k8sclient, err := kubernetes.NewForConfig(config)
+	k8sclient, err := configureK8sClient(config)
 
 	if err != nil {
+		// Failed to configure & create k8s client
 		Error.Printf("Unable to talk to the cluster. %s", err)
 		message = "Unable to talk to the cluster. See log for details.\n"
-	}
-
-	// Get pods list in the namespace
-	pods, err := k8sclient.CoreV1().Pods(namespace).List(metav1.ListOptions{})
-	if err != nil {
-		if errors.IsNotFound(err) {
-			Error.Printf("Pod not found. %s", err)
-			message = "Pod not found. See log for details.\n"
-		} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
-			Error.Printf("Error getting pods. %s", statusError.ErrStatus.Message)
-			message = fmt.Sprintf("Error getting pods. See log for details")
-		} else if err != nil {
-			Error.Printf("Unexpected Error: %s", err)
-			message = fmt.Sprintf("Unexpected error. See log for details")
-		}
 	} else {
-		Info.Printf("There are %d pods in the cluster\n", len(pods.Items))
-		message = fmt.Sprintf("There are %d pods in the cluster\n", len(pods.Items))
+		// K8s client setup successful.
+		// Get pods list in the namespace
+		pods, err := k8sclient.CoreV1().Pods(namespace).List(metav1.ListOptions{})
+		if err != nil {
+			// Failed to get pods
+			if errors.IsNotFound(err) {
+				Error.Printf("Pod not found. %s", err)
+				message = "Pod not found. See log for details.\n"
+			} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
+				Error.Printf("Error getting pods. %s", statusError.ErrStatus.Message)
+				message = fmt.Sprintf("Error getting pods. See log for details")
+			} else if err != nil {
+				Error.Printf("Unexpected Error: %s", err)
+				message = fmt.Sprintf("Unexpected error. See log for details")
+			}
+		} else {
+			// Succesfully retrieved pods
+			Info.Printf("There are %d pods in the cluster\n", len(pods.Items))
+			message = fmt.Sprintf("There are %d pods in the cluster\n", len(pods.Items))
+		}
 	}
 
 	w.Write([]byte(message))
