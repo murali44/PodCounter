@@ -90,6 +90,3 @@ as an environment variable. I did this in the deployment configuration file (dep
 
 **Note**: Don't forget to tag the image with your own docker hub repo and update the deploy.yml file to use your own container image.
 
-## Tests
-
-Unfortunately, I have not included tests with this repo. Being new to Golang, I was unable to successfully figure out how to mock interfaces and functions. I spent a number of hours trying different mock libraries on github, but failed to make my tests pass.
